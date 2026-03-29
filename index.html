@@ -1,38 +1,1004 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Spec proposal</title>
-    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove"></script>
-    <script class='remove'>
-      // See https://github.com/w3c/respec/wiki/ for how to configure ReSpec
-      var respecConfig = {
-        specStatus: "CG-DRAFT",
-        shortName: "did-resolution-threat-model",
-        editors: [{
-          name: "Pierre-Antoine Champin"
-        }]
-      };
-    </script>
-  </head>
-  <body>
-    <section id="abstract">
-      <p>
-        This specification does neat stuff.
-      </p>
+
+<head>
+  <meta charset="utf-8">
+  <title>DID Resolution Threat Model</title>
+  <script src="https://www.w3.org/Tools/respec/respec-w3c"
+    class="remove"></script>
+  <script class='remove'>
+    // See https://github.com/w3c/respec/wiki/ for how to configure ReSpec
+    var respecConfig = {
+      group: "did",
+      wgPublicList: "public-did-wg",
+      specStatus: "ED",
+      shortName: "did-resolution-threat-model",
+      editors: [{
+        name: "Joe Andrieu",
+        url: "https://www.linkedin.com/in/joe-andrieu/",
+        company: "Legendary Requirements",
+        companyURL: "http://legreq.com",
+        w3cid: 97261
+      },
+      {
+        name: "Steve McCown",
+        url: "https://www.linkedin.com/in/mccown/",
+        company: "Anonyome Labs",
+        companyURL: "https://anonyome.com",
+        w3cid: 139631
+      }],
+      github: {
+        repoURL: "https://github.com/w3c/did-resolution-threat-model",
+        branch: "main"
+      },
+      edDraftURI: "https://w3c.github.io/did-resolution-threat-model",
+
+      noRecTrack: "true",
+      maxTocLevel: 4,
+    };
+  </script>
+  <link rel="stylesheet" href="threat-model.css" />
+</head>
+
+<body>
+  <section id="abstract">
+    <p>
+      This threat model describes known threats of DID Resolution
+      specification at <a
+        href="https://w3c.github.io/did-resolution/">https://w3c.github.io/did-resolution/</a>.
+    </p>
+    <p>DID resolution is the process of taking a DID URL, which
+      contains a [=Decentralized Identifier=] and returns its
+      authoritative DID document. This is the first step in
+      dereferencing a DID URL.</p>
+  </section>
+  <section id="sotd">
+    <h2>Status of this Document</h2>
+    <p>This is an initial draft of a new NOTE-track publication from
+      the Decentralized Identifier Working Group (DIDWG).</p>
+  </section>
+  <section id="description">
+    <h2>Description</h2>
+    <p>
+      DID Resolution is the first step in dereferencing a DID URL.
+    </p>
+    <p>
+      Dereferencing means taking a reference to a resource and
+      bringing that
+      resource into the current computational context.
+    </p>
+    <p>In programming languages like <strong>c</strong> and
+      <strong>c++</strong>, dereferencing a pointer means accessing,
+      interpreting, or applying the value pointed to by that pointer
+      in the current computational context. On the web, dereferencing
+      a URL means retrieving a representation of
+      a resource and returning it for interactions in the local
+      context. For web pages, that means displaying the retrieved HTML
+      in the browser, with an appropriate view. For asynchronous
+      JavaScript aka AJAX requests, it means bringing the result from
+      a
+      HTTP request into the current JavaScript context for processing,
+      often to change the content of the page. Dereferencing a DID URL
+      means retrieving the appropriate resource referred to by the DID
+      URL and applying it in the current context.
+    </p>
+    <p>
+      Resolving is the first step in dereferencing, when you acquire
+      the
+      authoritative metadata that enables resource retrieval.
+      Resolving an HTTP URL means resolving the authority part
+      (typically a host or domain name) to get the IP address to use
+      for the HTTP request. The first step in
+      dereferencing a [=DID URL=] is DID is resolving the DID URL to
+      get the DID document and associated metadata that contain the
+      cryptographic material and service endpoints for securely
+      interacting with the resource referenced by the DID URL.
+      Dereferencing uses the result returned from resolution to
+      retrieve the actual resource.
+    </p>
+    <p>
+      DID URL resolution depends on method-specific interactions with
+      the DID method's Verifiable Data Registry. Every DID method
+      defines its own approach to retrieving DID state from a VDR. DID
+      Resolvers provide a standard interface to abstract those VDR
+      interactions away, enabling any DID-enabled application to rely
+      on a consistent API, regardless of how the method interacts with
+      a VDR.
+    </p>
+    <p>
+      DIDs can be used as identifiers for both subjects and issuers of
+      Verifiable Credentials and can anchor any number of
+      cryptographic
+      verification methods, such as attestations, authorizations,
+      encryption, and key agreement.
+    </p>
+    <p>
+      A discussion of Decentralized Identifier use cases can be found
+      in the <a href="https://www.w3.org/TR/did-use-cases/">W3C's Use
+        Cases
+        and
+        Requirements for Decentralized Identifiers</a>.
+    </p>
+    <p>The DID Resolution specification defines how DID URL clients
+      can dereference a DID URL into the current context, including
+      how to resolve the DID URL to get the authoritative DID document
+      used for retrieving the actual resource.
+    </p>
+    <p>This document describes the threats known to the DID WG at the
+      time of developing the specification, whether addressed by the
+      specification, to be addressed by implementers, or accepted as
+      unresolvable.</p>
+  </section>
+
+  <section id="architecture">
+    <h2>Architecture</h2>
+    <p>
+      The architecture of DID resolution is anchored between three
+      roles in
+      the system (client, resolver, and VDR), each typically running
+      on separate devices, although
+      different configurations may deploy these elements differently.
+      We present a unified view of the architecture below, followed by
+      two profiles, one for did:key and a single device and one for
+      did:btcr2 relying on arbitrary VDR devices.
+    </p>
+    <p>
+      The three primary roles are the client, the resolver, and the
+      Verifiable Data Registry (VDR). The
+      client has a DID URL the user wants to use. The client provides
+      the
+      business logic to manage DID resolution and apply the result to
+      its
+      current context. The Resolving Client connects to a DID Resolver
+      to get the authoritative DID document for that DID URL, then
+      interprets the result to update the current context.
+    </p>
+    <section>
+      <h3>Diagram</h3>
+      <img src="diagrams/DID Resolution DFD.svg"
+        alt="DID Resolution Architecture Diagram">
     </section>
-    <section id="sotd">
+    <section>
+      <h3>Description</h3>
       <p>
-        This is an unofficial proposal.
+        The process starts with a DID User (<a>E1</a>) who has a DID
+        URL
+        (<a>D1</a>)
+        they would like to dereference.
+      </p>
+      <p>
+        Using a DID User Client Device (<a>C1</a>), the user directs
+        the
+        device
+        to use the DID URL through some gesture, clicking on a link,
+        entering
+        a DID manually, or scanning a QR code (<a>F0</a>). This input
+        to
+        the DID
+        Enabled Application (<a>P1</a>) triggers a call to
+        ResolveDIDUrl
+        (<a>F1</a>)
+        on its internal Resolving Client (<a>P2</a>), which then
+        manages
+        the
+        process of resolution. How the client device gets a DID URL
+        and
+        interacts with the Resolving Client is outside the scope of
+        this
+        specification, in fact, it is entirely possible that DID
+        enabled
+        application (<a>P1</a>) directly acts as a resolving client
+        (<a>P2</a>).
+      </p>
+      <p>
+        Each device in the diagram represents a different trust
+        container,
+        each representing a specific set of code running on a
+        particular
+        device. Each code object (<a>D4</a>, <a>D6</a>, and <a>D8</a>)
+        is maintained by
+        at least one human maintainer (<a>E2</a>, <a>E5</a>,
+        <a>E8</a>,
+        respectively).
+        Each device (<a>C1</a>, <a>C2</a>, <a>C3</a>) is administered
+        by
+        at least one
+        human administrator (<a>E3</a>, <a>E6</a>, <a>E9</a>,
+        respectively) on behalf
+        of a service provider (<a>E4</a>, <a>E7</a>, <a>E10</a>,
+        respectively) who, as
+        a legal person, holds operational authority over each device.
+        It
+        is
+        understood that each device is operated by a service provider,
+        administered by a human, using code maintained by a human. In
+        the case
+        that either the maintenance or administration is AI-driven, we
+        consider the human configuring and running that AI to be the
+        maintainer or administrator, respectively. When discussing
+        different
+        deployment strategies, it is important to consider how these
+        entities
+        change and how those changes impact security of the system.
+      </p>
+      <p>
+        It is also worth noting that the resolve method call
+        (<a>F1</a>)
+        crosses
+        a fundamental trust boundary (<a>T1</a>), where the result of
+        the
+        resolver *is* necessarily taken as authoritative. Regardless
+        of
+        the
+        complexity of the resolver and VDR systems, the DID user
+        chooses
+        the
+        resolvers they trust; it is understood that the choice of
+        resolver is
+        an unavoidable build versus buy decision. However that
+        resolver
+        achieves the result is up to the quality of its own
+        implementation of
+        each supported DID method.
+      </p>
+      <p>
+        DID Resolution, as defined in this specification, begins after
+        the
+        Resolution Client Process (<a>P2</a>) receives a DID URL. It
+        first parses
+        resolution-specific DID parameters, turning them into
+        resolution
+        options, which are then passed, along with the original DID
+        URL
+        when
+        it calls Resolve (<a>F1</a>) on a running Resolver Process
+        (<a>P2</a>),
+        crossing the Resolution Trust Boundary (<a>T1</a>) to request
+        resolution.
+      </p>
+      <p>
+        The resolver (<a>P2</a>) queries the VDR (<a>P3</a>) with Read
+        VDR State
+        (<a>F3</a>), passing the Base DID URL (<a>D11</a>) –the DID
+        URL minus
+        the
+        fragment–and based on that state, generates the canonical DID
+        Document
+        (<a>D3</a>) and associated metadata (<a>D10</a> and
+        <a>D11</a>)
+        which is
+        returned to the Resolution Client Process (<a>P2</a>). This
+        result is
+        passed back to DID URL Dereferencer Process (<a>P1</a>),
+        concluding the
+        resolution process for that DID URL (<a>E1</a>). The
+        dereferencing
+        process takes that result and depending on whether or not a
+        secondary
+        resource is indicated, it either returns the DID document or
+        dereferences the secondary resource.
+      </p>
+      <p>
+        How the VDR maintains state (<a>D7</a>) and how the resolver
+        reads that
+        state (<a>F3</a>) are DID-method specific, defined in each DID
+        method
+        specification.
       </p>
     </section>
 
-    <section id="introduction">
-      <h2>Introduction</h2>
+    <section id="architecture-dictionary">
+      <h3>Dictionary</h3>
+      <style>
+        table.dictionary,
+        table.dictionary th,
+        table.dictionary td {
+          border: thin solid rgb(176, 176, 176);
+          border-collapse: collapse;
+          padding: 5px;
+        }
+
+        table.dictionary td.left {
+          width: 12em;
+        }
+      </style>
+      <table class="dictionary">
+        <tbody>
+          <tr>
+            <td class="left"><dfn
+                data-lt="E1|E1 DID URL User|DID URL User">E1 DID URL
+                User</dfn></td>
+            <td>The user of the decentralized identifier URL
+              (<a>D1</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E2|E2 Client Code Maintainer|Client Code Maintainer">E2
+                Client Code Maintainer</dfn></td>
+            <td>The person maintaining the client software (<a>D4</a>)
+            </td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E3|E3 Client Administrator|Client Administrator">E3
+                Client Administrator</dfn></td>
+            <td>The person administering the client software
+              (<a>D4</a>) configuration on the client device
+              (<a>C1</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E4|E4 Client Service Provider|Client Service Provider">E4
+                Client Service Provider</dfn></td>
+            <td>The party legally responsible for the client software
+              (<a>D4</a>) running on the client device (<a>C1</a>)
+            </td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E5|E5 Resolver Code Maintainer|Resolver Code Maintainer">E5
+                Resolver Code Maintainer</dfn></td>
+            <td>The person maintaining the resolver software
+              (<a>D8</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E6|E6 Resolver Administrator|Resolver Administrator">E6
+                Resolver Administrator</dfn></td>
+            <td>The person administering the resolver software
+              (<a>D8</a>) configuration on the resolver device
+              (<a>C3</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E7|E7 Resolver Service Provider|Resolver Service Provider">E7
+                Resolver Service Provider</dfn></td>
+            <td>The party legally responsible for the resolver
+              software (<a>D8</a>) running on the resolver device
+              (<a>C3</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E8|E8 VDR Code Maintainer|VDR Code Maintainer">E8
+                VDR Code Maintainer</dfn></td>
+            <td>The person maintaining the VDR software (<a>D6</a>)
+            </td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E9|E9 VDR Administrator|VDR Administrator">E9
+                VDR Administrator</dfn></td>
+            <td>The person administering the VDR software (<a>D6</a>)
+              configuration on the VDR device (<a>C2</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="E10|E10 VDR Service Provider|VDR Service Provider">E10
+                VDR Service Provider</dfn></td>
+            <td>The party legally responsible for the VDR software
+              (<a>D6</a>) running on the VDR device (<a>C2</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="P1|P1 DID Enabled Application|DID Enabled Application">P1
+                DID Enabled Application</dfn></td>
+            <td>The process peforming dereferencing. It coordinates
+              with the resolving client (<a>P2</a>) and performs
+              whatever is needed after resolution to dereference the
+              DID URL.</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="P2|P2 Resolver|Resolver">P2
+                Resolver Process</dfn></td>
+            <td>The process running on the resolver device that knows
+              how to access the VDR for a given DID method (using
+              <a>F3</a> to reach <a>P3</a>) and interpret the response
+              to generate the canonical DID document for the DID URL
+              (<a>D1</a>) in question.
+            </td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="P3|P3 VDR Node|VDR Node">P3 VDR
+                Process</dfn></td>
+            <td>The process that interfaces directly with the VDR data
+              store and provides selected VDR state to the resolver
+              (<a>P2</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="F0|F0 Use DID URL|Use DID URL">F0 Use
+                DID URL</dfn></td>
+            <td>The initial interaction from the DID URL User
+              (<a>E1</a>), directing the software to use the DID URL
+              (<a>D1</a>) in some fashion.</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="F1|F1 Resolve|Resolve">F1
+                Resolve</dfn></td>
+            <td>The call from the DID enabled application (<a>P1</a>)
+              to
+              the resolver (<a>P2</a>) requesting the canonical DID
+              document for a given DID URL.</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="F3|F3 Read VDR State|Read VDR State">F3
+                Read VDR State</dfn></td>
+            <td>The call from the resolver (<a>P2</a>) to the VDR
+              (<a>P3</a>) requesting state data related to a given DID
+              URL (<a>D1</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D1|D1 DID URL|DID URL">D1 DID URL</dfn>
+            </td>
+            <td>The initial DID URL, including any path, query, and
+              fragment parts. This is a pointer to a resource that can
+              be dereferenced (<a>P1</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D2|D2 BASE DID URL|BASE DID URL">D2 BASE
+                DID URL</dfn>
+            </td>
+            <td>A version of the initial DID URL without the fragment
+              part, sent to the Resolver (<a>P2</a>). This is a
+              pointer to a resource that can
+              be dereferenced (<a>P1</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D3|D3 DID Document|DID Document">D3 DID
+                Document</dfn></td>
+            <td>The canonical DID document for the DID URL
+              (<a>D1</a>), taking into account any parameters that
+              might affect resolution, such as <em>versionId</em></td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D4|D4 Client Code|Client Code">D4 Client
+                Code</dfn></td>
+            <td>Software running on the client device (<a>C1</a>) that
+              manages the user experience as well as the dereferencing
+              (<a>P1</a>) and resolution (<a>P2</a>) processes. This
+              code includes all of the client-side software running in
+              that container. This means the business logic, the UX
+              interface, and any plugins that might be part of a
+              solution. For example, a browser that leverages an
+              extension to allow a website to dereference a DID would
+              have a much more complicated set of code, processes, and
+              flows between those components. If profiling the DID
+              architecture for more complex setups, these components
+              may deserve their own processes, code, and data stores.
+            </td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="D5|D5 DID Client Data Store|DID Client Data Store">D5
+                DID Client Data Store</dfn></td>
+            <td>Data stored in the client device (<a>C1</a>), presumed
+              to be accessible to any process in the container,
+              including the dereferencer (<a>P1</a>) and resolver
+              (<a>P2</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D6|D6 VDR Code|VDR Code">D6 VDR
+                Code</dfn></td>
+            <td>Software running on the VDR device (<a>C2</a>) that
+              maintains the state of the VDR and makes that state
+              available to the resolver via the Read VDR State
+              function (<a>F3</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D7|D7 VDR Data Store|VDR Data Store">D7
+                VDR Data Store</dfn></td>
+            <td>Data stored in the VDR device (<a>C2</a>), presumed
+              accessible to the VDR Process (<a>P3</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D8|D8 Resolver Code|Resolver Code">D8
+                Resolver Code</dfn></td>
+            <td>Software running on the resolver device (<a>C3</a>),
+              which handles incoming Resolve (<a>F1</a>) calls, taking
+              an incoming DID URL (<a>D1</a>) and returning its
+              canonical DID document (<a>D3</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="D9|D9 Resolver Local Data|Resolver Local Data">D9
+                Resolver Local Data</dfn></td>
+            <td>Data stored on the resolver device (<a>C3</a>),
+              presumed accessible to the Resolver Process (<a>P2</a>)
+            </td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="D10|D10 DID Document Metadata|DID Document Metadata">D10
+                DID Document Metadata</dfn></td>
+            <td>Metadata related to the DID Document (<a>D3</a>).
+              Returned by resolver (<a>P2</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="D11|D11 DID Resolution Metadata|DID Resolution Metadata">D11
+                DID Resolution Metadata</dfn></td>
+            <td>Metadata related to the DID Resolution. Returned by
+              resolver (<a>P2</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="C1|C1 DID User Client Device|DID User Client Device">C1
+                DID User Client Device</dfn></td>
+            <td>The user's device, which runs the dereferencing
+              (<a>P1</a>) and resolution client (<a>P2</a>) processes
+              using client code (<a>D4</a>) as configured by the
+              client administrator (<a>E3</a>) on behalf of the client
+              service provider (<a>E4</a>).</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="C2|C2 Resolver Device|Resolver Device">C3
+                Resolver Device</dfn></td>
+            <td>The device running the resolver process (<a>P2</a>)
+              using resolver code (<a>D6</a>) as configured by the
+              resolver administrator (<a>E6</a>) on behalf of the
+              resolver service provider (<a>E7</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="C3|C3 VDR Device|VDR Device">C2 VDR
+                Device</dfn></td>
+            <td>The device running the VDR process (<a>P3</a>) using
+              VDR code (<a>D8</a>) as configured by the VDR
+              administrator (<a>E9</a> on behalf of the VDR service
+              provider
+              (<a>E10</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn
+                data-lt="T1|T1 Resolution Trust Boundary|Resolution Trust Boundary">T1
+                Resolution Trust Boundary</dfn></td>
+            <td>The boundary between the resolver client (<a>P1</a>)
+              and the resolver (<a>P2</a>). It is understood that the
+              client process (<a>P1</a>) MUST inherently trust the
+              resolver
+              (<a>P2</a>) which also implies the user (<a>E1</a>)
+              trusts the resolver service provider (<a>E7</a>)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+  <section id="stakholders">
+    <h2>Stakeholders</h2>
+    <section>
+      <h3>E1 DID URL User</h3>
       <p>
-        See <a href="https://github.com/w3c/respec/wiki/User's-Guide">ReSpec's user guide</a>
-        for how toget started!
+        The primary end user for DID resolution is an individual human
+        seeking
+        to use a DID URL for some purpose. There are two major
+        variations of
+        this [=DID URL User=]:
+      </p>
+      <ol>
+        <li>Someone who controls a [=DID document=], and presumably is
+          able to
+          update the DID document should its DID method support it.
+        </li>
+        <li>Someone who has received or seen a DID URL in a particular
+          context
+          and wants to perform a DID related function with it,
+          <ol>
+            <li>Verifying a proof signed by the DID</li>
+            <li>Verifying an authorization invocation</li>
+            <li>Interacting with the DID controller by sending a
+              message to a
+              service endpoint</li>
+            <li>Retrieving a resource indicated by a DID</li>
+          </ol>
+        </li>
+      </ol>
+      <p>
+        The [=DID URL User=] is primarily concerned with the integrity
+        and
+        reliability of the system. They may be just about anyone on
+        the planet
+        with a computation device at their disposal: a smart phone, a
+        desktop,
+        even a shared device at a library or internet cafe. The User
+        could
+        also be a corporate employee or agent, who has received a DID
+        from a
+        supplier or customer and wants to use it to verify a
+        verifiable
+        presentation or satisfy a confidence method to increase their
+        confidence that a given actor is the subject of a particular
+        Verifiable Credential.
+      </p>
+      <p>
+        As a technical layperson, the DID URL User requires a certain
+        reliability and simplicity; the system should “just work” in
+        the
+        manner they have become accustomed to on the Web. When their
+        software
+        encounters a DID URL, it should work just like any URL,
+        without
+        additional interactions, when possible.
+      </p>
+      <p>
+        Perhaps most importantly, the DID URL User SHOULD retain
+        complete
+        control over which software and services they use for DID
+        resolution.</p>
+      <p>
+        In practice, most individuals will make choices based on brand
+        confidence and peer recommendations. End users choose the
+        software
+        they want to run and the services they access, including which
+        resolvers to use for specific DID methods. Just like a web
+        browser
+        enables end users to choose which website they want to visit,
+        DID URL
+        users MUST be able to direct their DID client software to use
+        the
+        resolvers they trust. In practice, software will be delivered
+        with
+        default services and many users will never see the difference,
+        just as
+        some users may start on a browser's default home page and only
+        click
+        on links, never typing a URL into an address bar. However, it
+        is a
+        fundamental security decision that end users get to decide
+        which
+        resolvers are trusted.
+      </p>
+      <p>
+        Finally, the DID URL User may have any number of accessibility
+        challenges, from visual impairments to language gaps. While it
+        is
+        important that DID resolution works seamlessly without a lot
+        of
+        cognitive burden, implementations should take care to ensure
+        that the
+        broadest number of users can effectively use the technology,
+        especially when interactive prompts are used to confirm or
+        direct
+        intermediary behavior. For example, did:btcr has an iterative
+        resolution process, where the data required to complete
+        resolution may
+        not be known–even as a requirement–when the DID URL is
+        initially
+        presented.
       </p>
     </section>
-  </body>
+    <section>
+      <h3>E2 Client Code Maintainer</h3>
+      <p>
+        The client code maintainer cares about the integrity of their
+        software
+        code base.
+      </p>
+    </section>
+    <section>
+      <h3>E3 Client Administrator</h3>
+      <p>
+        The client administrator cares about a reliably working client
+        device.
+        They want to know the software configuration on the device
+        aligns with
+        individual and/or corporate policy, especially with regard to
+        resolver
+        selection and library adoption.
+      </p>
+    </section>
+    <section>
+      <h3>E4 Client Service Provider</h3>
+      <p>
+        If the client service provider is primarily concerned with the
+        integrity, usability, and profitability/cost of the service.
+        For
+        typical consumer usage, the end user is the client service
+        provider,
+        but when the client is run on behalf of a corporation for its
+        employees, that employer is the client service provider.
+      </p>
+      <p>
+        The Client Service Provider cares about the code and
+        configuration on
+        the device is as the administrator has established, based on
+        the
+        service provider’s policies.
+      </p>
+    </section>
+    <section>
+      <h3>E5 Resolver Code Maintainer</h3>
+      <p>
+        The resolver code maintainer wants to ensure that their code
+        is
+        provably executing the resolution function as defined in the
+        DID
+        methods it supports.
+      </p>
+    </section>
+    <section>
+      <h3>E6 Resolver Administrator</h3>
+      <p>
+        The resolver administrator wants to ensure that the resolution
+        service
+        is configured as intended and that any libraries or original
+        software
+        is reliably performing as needed and expected.
+      </p>
+    </section>
+    <section>
+      <h3>E7 Resolver Service Provider</h3>
+      <p>
+        The resolver administrator wants to ensure that the resolution
+        service
+        is running as configured and without errors.
+      </p>
+      <p>
+        Fundamentally, the resolver service must be trustworthy enough
+        for
+        users to be willing to rely on its service for
+        cryptographically
+        anchored interactions. Since DIDs can be used to secure
+        information
+        and transactions of arbitrary value, the service provider
+        necessarily
+        wants to be perceived as reliable, friendly, and easy to use.
+      </p>
+      <p>
+        At the end of the day, it's the resolver service provider that
+        the DID
+        URL User is trusting to return the real, authoritative DID
+        document.
+      </p>
+    </section>
+    <section>
+      <h3>E8 VDR Code Maintainer</h3>
+      <p>
+        The VDR Code Maintainer cares primarily about the quality of
+        their
+        code. Many VDRs are open source, but there is no expectation
+        that this
+        is always true. Whether open or closed source, the code
+        maintainer
+        wants to be able to maintain code quality so that those who
+        rely on
+        their software can rest assured that the software is doing
+        exactly
+        what is promised, and no more.
+      </p>
+      <p>
+        That said, the VDR Code Maintainer may only care about the
+        Verifiable
+        Data Registry, without any expectation of use beyond that. To
+        wit,
+        BTCR2 can use a VDR device that is directly running a full
+        bitcoin
+        node; in that configuration, the VDR code maintainer is a
+        bitcoin core
+        developer. Bitcoin core developers care primarily about the
+        integrity
+        of the bitcoin network as maintained by bitcoin core. They
+        don't care
+        about DIDs, nor do they need to.
+      </p>
+    </section>
+    <section>
+      <h3>E9 VDR Administrator</h3>
+      <p>
+        The VDR administrator runs the actual VDR device queried by
+        the
+        resolver. In most configurations, they care primarily (perhaps
+        ONLY)
+        about the reliable operation of the VDR device.
+      </p>
+    </section>
+    <section>
+      <h3>E10 VDR Service Provider</h3>
+      <p>
+        VDR service providers care about providing a reliable
+        verifiable data
+        registry, for whatever purpose that VDR is used for. Often a
+        VDR
+        service provider stands up a VDR device as a public service,
+        such as
+        bitcoin nodes that are accessible by others. Some service
+        providers
+        may offer VDR capability as a paid service.
+      </p>
+    </section>
+  </section>
+  <section>
+    <h2>Threats</h2>
+    <section id="threat-list">
+      <h3>Threat List</h3>
+      <h4>Target Threats</h4>
+      <ol>
+        <li><a href="#t1-interference-by-a-central-authority">T1.
+            Interference by a central authority</a></li>
+      </ol>
+    </section>
+    <section>
+      <h3>Threat Details</h3>
+      <section>
+        <h4>T1. Interference by a central authority</h4>
+        <table class="threat">
+          <tr>
+            <td class="threat-name">
+              <section>
+                <h4>T1. Interference by a central authority</h4>
+                <span class="index-link">[<a
+                    href="#threat-list">Threat
+                    List</a>]</span>
+              </section>
+            </td>
+          </tr>
+          <tr>
+            <td class="threat-description">
+              When identifiers are controlled by central authorities,
+              it is possible for that authority--or any hacker with
+              access to that authority's system--to manipulate the
+              identity system by disabling identifiers, taking control
+              over identifiers, or simply tracking their use.
+            </td>
+          </tr>
+          <tr>
+            <td class="response-name">R1. User Selected Client
+              Software</td>
+          </tr>
+          <tr>
+            <td class="response-desc">
+              Allow end-users to choose the software they use to
+              present and use [=Decentralized Identifiers=]. When free
+              to decide which software to use on the client-side,
+              there is an increased chance that the software chosen
+              supports features that favor the individual rather than
+              any given authority. This includes the possibility that
+              the user writes their own software.
+            </td>
+          </tr>
+          <tr>
+            <td class="response-name">R2. User selected resolvers</td>
+          </tr>
+          <tr>
+            <td class="response-desc">
+              When using a DID enabled application, it is vital that
+              end-users can decide which resolver to use for which DID
+              method. This ensures that end users can rely on the
+              resolver that best aligns with their interests and
+              concerns, including avoiding risks from centralized
+              authorities.
+            </td>
+          </tr>
+          <tr>
+            <td class="affected-component">Affected Components:
+              <a>C1</a>, <a>C3</a>, <a>P2</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="analysis-framework">Analysis Framework: NONE
+            </td>
+          </tr>
+        </table>
+      </section>
+    </section>
+  </section>
+  <section>
+    <h3>Contributing</h3>
+    <p>This threat model was developed using the <a
+        href="https://w3.org/tr/threat-modeling-guide">W3C Threat
+        Modeling Guide</a>. Contributions to this threat model that
+      are aligned with that approach are welcome. </p>
+    <p>To propose a change, create an <a
+        href="https://github.com/w3c/did-resolution-threat-model/issues/new/choose">new
+        issue</a> proposing your change. Discussion on Github about
+      that issue will help collaborators understand and incorporate it
+      into the model. It may be that the issue is perfect, but most
+      likely feedback will improve it. </p>
+    <p>Once a consensus has emerged about adding a particular threat,
+      updating the diagram, or any other change, a Pull Request
+      can be submitted to the repo to propose the actual specification
+      text that realizes the suggestion.
+    </p>
+    <p>Issues discussing threats should eventually cover all of the
+      threat details needed to propose the change in a PR.
+    </p>
+    <section>
+      <h4>Adding a threat</h4>
+    </section>
+    <p>To add a new threat to the model, we need several components.
+    </p>
+    <ol>
+      <li>A good name</li>
+      <li>A unique ID</li>
+      <li>A description</li>
+      <li>One or more responses</li>
+      <li>List of affected elements</li>
+      <li>The analytic framework</li>
+    </ol>
+    <p>We discuss each of these below.</p>
+    <section>
+      <h5>A good name</h5>
+      <p>Choose a short, descriptive name that captures the essence of
+        the threat. Make sure the name is distinctive within this
+        threat model.</p>
+    </section>
+    <section>
+      <h5>A unique ID</h5>
+      <p>Every threat should have a unique ID that starts with the
+        letter <strong>'T'</strong> following by an integer number,
+        e.g., <strong>T12</strong></p>
+    </section>
+    <section>
+      <h5>A description</h5>
+      <p>Describe the threat with enough detail for readers to
+        understand the scope of concern</p>
+    </section>
+    <section>
+      <h5>One or more responses</h5>
+      <p>Each response should describe something either the
+        specification does or that implenters should consider to
+        address the threat. Responses also need a good name (short and
+        descriptive) and a unique ID (starting with the letter 'R'
+        followed by an integer number).</p>
+      <p>It is likely that a single response is appropriate for
+        multiple unique threats. For example, cryptographic signing is
+        a reasonable response to tampering for any number of data
+        objects. In this case, simply reuse the response name and ID
+        of the first use and repeat the description text along with
+        the phrase, in parantheses, '(Reused Response)'</p>
+    </section>
+    <section>
+      <h5>List of affected elements</h5>
+      <p>Drawing from the diagram and dictionary, identify the
+        components in the diagram affected by this threat. Make sure
+        the PR includes a link to the affected components, e.g.,
+      <pre><a>C1</a></pre>
+      </p>
+    </section>
+    <section>
+      <h5>The analytic framework</h5>
+      <p>Identify the analytic framework used to identify the threat.
+        For example, STRIDE, LINDUN, or OSSTMM. If none was used,
+        enter "NONE".</p>
+    </section>
+    <section>
+      <h5>Example HTML for a threat</h5>
+      <p>For this threat model, please base threats on the following
+        HTML template</p>
+      <pre>
+&lt;table class=&quot;threat&quot;&gt;
+  &lt;tr&gt;
+    &lt;td class=&quot;threat-name&quot;&gt;
+      &lt;section&gt;
+        &lt;h4&gt; &lt;dfn data-lt=&quot;Tx|Tx. Example Threat&quot;&gt;&lt;/dfn&gt;Tx. Example Threat&lt;/h4&gt;&lt;span
+    class=&quot;index-link&quot;&gt;[&lt;a href=&quot;#threat-list&quot;&gt;Threat
+      List&lt;/a&gt;]&lt;/span&gt;
+      &lt;/section&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class=&quot;threat-description&quot;&gt;
+      A description of the threat...
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class=&quot;response-name&quot;&gt;Rx. Response  Name&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class=&quot;response-desc&quot;&gt;
+      A description of the response...
+    &lt;/td&gt;
+  &lt;/tr&gt;
+      &lt;tr&gt;
+    &lt;td class=&quot;affected-component&quot;&gt;Affected  Components: &lt;a&gt;C1&lt;/a&gt;&lt;td&gt;
+  &lt;/tr&gt;
+
+  &lt;tr&gt;
+    &lt;td class=&quot;analysis-framework&quot;&gt;Analytic  Framework: &lt;/td&gt;
+    A framework
+  &lt;/tr&gt;
+&lt;/table&gt;
+      </pre>
+    </section>
+  </section>
+</body>
+
 </html>
