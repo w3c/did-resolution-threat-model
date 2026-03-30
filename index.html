@@ -999,21 +999,14 @@
       </pre>
     </section>
   </section>
-
-    
-    <script href="threatmodel.js">
-      windows.threatmodel = {
-        render() { };
-        register() { };
-        validate() { };
-      } </script>
-
-    <script href="t1-interference-by-a-central-authority.js">
+  
+    <script href="threats/t1-interference-by-a-central-authority.js" async="false" type="module">
     </script>
 
-  <script>
+  <script async="false" type="module">
+    import ThreatModel from './threatmodel.js';
     (function () {
-      threatmodel.render();
+      ThreatModel.render();
     })();
   </script>
 </body>
