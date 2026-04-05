@@ -562,7 +562,7 @@
       </table>
     </section>
   </section>
-  <section id="stakholders">
+  <section id="stakeholders">
     <h2>Stakeholders</h2>
     <section>
       <h3>E1 DID URL User</h3>
@@ -807,77 +807,9 @@
   </section>
   <section>
     <h2>Threats</h2>
-    <section id="threat-list">
-      <h3>Threat List</h3>
-      <h4>Target Threats</h4>
-      <ol>
-        <li><a href="#t1-interference-by-a-central-authority">T1.
-            Interference by a central authority</a></li>
-      </ol>
+    <section id="threat-toc">
     </section>
-    <section>
-      <h3>Threat Details</h3>
-      <section>
-        <h4>T1. Interference by a central authority</h4>
-        <table class="threat">
-          <tr>
-            <td class="threat-name">
-              <section>
-                <h4>T1. Interference by a central authority</h4>
-                <span class="index-link">[<a
-                    href="#threat-list">Threat
-                    List</a>]</span>
-              </section>
-            </td>
-          </tr>
-          <tr>
-            <td class="threat-description">
-              When identifiers are controlled by central authorities,
-              it is possible for that authority--or any hacker with
-              access to that authority's system--to manipulate the
-              identity system by disabling identifiers, taking control
-              over identifiers, or simply tracking their use.
-            </td>
-          </tr>
-          <tr>
-            <td class="response-name">R1. User Selected Client
-              Software</td>
-          </tr>
-          <tr>
-            <td class="response-desc">
-              Allow end-users to choose the software they use to
-              present and use [=Decentralized Identifiers=]. When free
-              to decide which software to use on the client-side,
-              there is an increased chance that the software chosen
-              supports features that favor the individual rather than
-              any given authority. This includes the possibility that
-              the user writes their own software.
-            </td>
-          </tr>
-          <tr>
-            <td class="response-name">R2. User selected resolvers</td>
-          </tr>
-          <tr>
-            <td class="response-desc">
-              When using a DID enabled application, it is vital that
-              end-users can decide which resolver to use for which DID
-              method. This ensures that end users can rely on the
-              resolver that best aligns with their interests and
-              concerns, including avoiding risks from centralized
-              authorities.
-            </td>
-          </tr>
-          <tr>
-            <td class="affected-component">Affected Components:
-              <a>C1</a>, <a>C3</a>, <a>P2</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="analysis-framework">Analysis Framework: NONE
-            </td>
-          </tr>
-        </table>
-      </section>
+    <section id="threat-details">
     </section>
   </section>
   <section>
@@ -902,113 +834,152 @@
     </p>
     <section>
       <h4>Adding a threat</h4>
-    </section>
-    <p>To add a new threat to the model, we need several components.
-    </p>
-    <ol>
-      <li>A good name</li>
-      <li>A unique ID</li>
-      <li>A description</li>
-      <li>One or more responses</li>
-      <li>List of affected elements</li>
-      <li>The analytic framework</li>
-    </ol>
-    <p>We discuss each of these below.</p>
-    <section>
-      <h5>A good name</h5>
-      <p>Choose a short, descriptive name that captures the essence of
-        the threat. Make sure the name is distinctive within this
-        threat model.</p>
-    </section>
-    <section>
-      <h5>A unique ID</h5>
-      <p>Every threat should have a unique ID that starts with the
-        letter <strong>'T'</strong> following by an integer number,
-        e.g., <strong>T12</strong></p>
-    </section>
-    <section>
-      <h5>A description</h5>
-      <p>Describe the threat with enough detail for readers to
-        understand the scope of concern</p>
-    </section>
-    <section>
-      <h5>One or more responses</h5>
-      <p>Each response should describe something either the
-        specification does or that implenters should consider to
-        address the threat. Responses also need a good name (short and
-        descriptive) and a unique ID (starting with the letter 'R'
-        followed by an integer number).</p>
-      <p>It is likely that a single response is appropriate for
-        multiple unique threats. For example, cryptographic signing is
-        a reasonable response to tampering for any number of data
-        objects. In this case, simply reuse the response name and ID
-        of the first use and repeat the description text along with
-        the phrase, in parantheses, '(Reused Response)'</p>
-    </section>
-    <section>
-      <h5>List of affected elements</h5>
-      <p>Drawing from the diagram and dictionary, identify the
-        components in the diagram affected by this threat. Make sure
-        the PR includes a link to the affected components, e.g.,
-      <pre><a>C1</a></pre>
+      <p>To add a new threat to the model, we need several components.
       </p>
+      <ol>
+        <li>A good name</li>
+        <li>A unique ID</li>
+        <li>A description</li>
+        <li>One or more responses</li>
+        <li>List of affected elements</li>
+        <li>The analytic framework</li>
+      </ol>
+      <p>We discuss each of these below.</p>
+      <section>
+        <h5>A good name</h5>
+        <p>Choose a short, descriptive name that captures the essence
+          of
+          the threat. Make sure the name is distinctive within this
+          threat model.</p>
+      </section>
+      <section>
+        <h5>A unique ID</h5>
+        <p>Every threat should have a unique ID that starts with the
+          letter <strong>'T'</strong> following by an integer number,
+          e.g., <strong>T12</strong></p>
+      </section>
+      <section>
+        <h5>A description</h5>
+        <p>Describe the threat with enough detail for readers to
+          understand the scope of concern</p>
+      </section>
+      <section>
+        <h5>One or more responses</h5>
+        <p>Each response should describe something either the
+          specification does or that implenters should consider to
+          address the threat. Responses also need a good name (short
+          and
+          descriptive) and a unique ID (starting with the letter 'R'
+          followed by an integer number).</p>
+        <p>It is likely that a single response is appropriate for
+          multiple unique threats. For example, cryptographic signing
+          is
+          a reasonable response to tampering for any number of data
+          objects. In this case, simply reuse the response name and ID
+          of the first use and repeat the description text along with
+          the phrase, in parantheses, '(Reused Response)'</p>
+      </section>
+      <section>
+        <h5>List of affected elements</h5>
+        <p>Drawing from the diagram and dictionary, identify the
+          components in the diagram affected by this threat. Make sure
+          the PR includes a link to the affected components, e.g.,
+        <pre><a>C1</a></pre>
+        </p>
+      </section>
+      <section>
+        <h5>The analytic framework</h5>
+        <p>Identify the analytic framework used to identify the
+          threat.
+          For example, STRIDE, LINDUN, or OSSTMM. If none was used,
+          enter "NONE".</p>
+      </section>
     </section>
     <section>
-      <h5>The analytic framework</h5>
-      <p>Identify the analytic framework used to identify the threat.
-        For example, STRIDE, LINDUN, or OSSTMM. If none was used,
-        enter "NONE".</p>
-    </section>
-    <section>
-      <h5>Example HTML for a threat</h5>
-      <p>For this threat model, please base threats on the following
-        HTML template</p>
-      <pre>
-&lt;table class=&quot;threat&quot;&gt;
-  &lt;tr&gt;
-    &lt;td class=&quot;threat-name&quot;&gt;
-      &lt;section&gt;
-        &lt;h4&gt; &lt;dfn data-lt=&quot;Tx|Tx. Example Threat&quot;&gt;&lt;/dfn&gt;Tx. Example Threat&lt;/h4&gt;&lt;span
-    class=&quot;index-link&quot;&gt;[&lt;a href=&quot;#threat-list&quot;&gt;Threat
-      List&lt;/a&gt;]&lt;/span&gt;
-      &lt;/section&gt;
-    &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class=&quot;threat-description&quot;&gt;
-      A description of the threat...
-    &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class=&quot;response-name&quot;&gt;Rx. Response  Name&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class=&quot;response-desc&quot;&gt;
-      A description of the response...
-    &lt;/td&gt;
-  &lt;/tr&gt;
-      &lt;tr&gt;
-    &lt;td class=&quot;affected-component&quot;&gt;Affected  Components: &lt;a&gt;C1&lt;/a&gt;&lt;td&gt;
-  &lt;/tr&gt;
+      <h5>Adding to this repo</h5>
+      <ol>
+        <li>Create A threat file</li>
+        <li>Give it a good name</li>
+        <li>Add javascript element</li>
+        <li>Add threat to outline</li>
+      </ol>
+      <h6>Create a threat file</h6>
+      <p>Create a JavaScript file that defines and registers your
+        threat, formatted like the following template. Make sure you
+        retain the opening immediate function execution wrapper and
+        that you register with the ThreatModel object.</p>
+      <pre id="threatTemplate">
+// wrap your data definition in an Immediately Invoked Function Expression
+(function () {
+  
+  // then define a single threat
+  var threat = {
+    id: "T0",
+    name: "Template Threat",
+    description: "This is a template threat. It is not a real threat.",
+    responses: [{
+      id: "R0",
+      name: "Template Response",
+      description: "This is a template response. It is not a real response."
+    }],
+    elements: ["C1", "P1"],
+    framework: {
+      name: "Fake Framework",
+      type: "Fake Type"
+    }
+  };
 
-  &lt;tr&gt;
-    &lt;td class=&quot;analysis-framework&quot;&gt;Analytic  Framework: &lt;/td&gt;
-    A framework
-  &lt;/tr&gt;
-&lt;/table&gt;
+  // then register that threat with the global ThreatModel object 
+  window.ThreatModel.registerThreat(threat);
+
+})();  // Finish the Immediately Invoked Function Expression
+
+
+       </pre>
+      <h6>Give the file a good name</h6>
+      <p>Name the file uniquely, preferably with the following pattern
+        based on the ID and name, all in lower-case kebab style</p>
+      <pre>
+          var id = `${threat.id}-${threat.name}`;
+          id = id.toLowerCase();
+          id = id.replace(/ /g, "-");
+          return id;
       </pre>
+      <p>For example, <strong>T0. Template Threat</strong> becomes
+        <code>t0-template-threat</code></p>
+
+      <h6>Add javascript element</h6>
+      <p>Add a new <code>&lt;script&gt;</code> tag</p> to index.html
+      alongside the other threat definition files</h6>
+      <pre>
+        &lt;script src="threats/t0-template-threat.js"&gt;&lt;/script&gt;
+      </pre>
+      <h6>Add threat to outline</h6>
+      <p>Update the outline.js file, adding the <code>id</code> of
+        your threat, e.g., <code>T0</code> to the threats array.
+      </p>
+      <h6>Test & Submit</h6>
+      <p>Open the index.html locally and you should see your threat
+        added to the list. Propose your working change as a PR, for
+        consideration by the editors.</p>
     </section>
   </section>
-  
-    <script href="threats/t1-interference-by-a-central-authority.js" async="false" type="module">
-    </script>
 
-  <script async="false" type="module">
-    import ThreatModel from './threatmodel.js';
+  <script src="threatmodel.js"></script>
+
+  <script
+    src="threats/t1-interference-by-a-central-authority.js"></script>
+  <script src="threats/t4-unspoorted-did-methods.js"></script>
+
+  <script src="threats/outline.js"></script>
+
+  <script>
+    console.log('loading threatmodel');
     (function () {
-      ThreatModel.render();
+      window.ThreatModel.render();
     })();
   </script>
+
 </body>
 
 </html>
