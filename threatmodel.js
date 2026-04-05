@@ -118,7 +118,7 @@
             <td class="threat-name">
               <section>
                 <h5 id="${threat.id}.inner">${threat.id}. ${threat.name}</h5>
-                <span class="index-link">[<a href="#threat-toc">Threat List</a>]</span>
+                ${renderTocLink()}
               </section>
             </td>
           </tr>
@@ -129,11 +129,25 @@
           </tr>
           ${renderImage(threat)}
           ${renderResponses(threat)}
-          <tr>
-            <td class="affected-component">Affected Components: ${threat.elements.map(element => `<a>${element}</a>`).join(", ")}</td>
-          </tr>
+          ${renderComponents(threat)}
           ${renderFramework(threat)}
         </table>`;
+    
+      // now define support functions
+      function renderComponents(threat) {
+        if (!threat.elements || !threat.elements.length)
+          return "";
+
+        return `<tr>
+          <td class="affected-component">Affected Components: ${threat.elements.map(element => `<a>${element}</a>`).join(", ")}</td>
+        </tr>`;
+      }
+
+      function renderTocLink() {
+        if (!toc)
+          return "";
+        return `<span class="index-link">[<a href="#threat-toc">Threat List</a>]</span>`;
+      }
 
       function renderImage(threat) {
         let image = threat.image;
