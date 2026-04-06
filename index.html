@@ -54,11 +54,11 @@
   </section>
   <section id="sotd">
     <h2>Status of this Document</h2>
-    <p>This is an initial draft of a new NOTE-track publication from
+    <p>This is a draft of a new NOTE-track publication from
       the Decentralized Identifier Working Group (DIDWG).</p>
   </section>
-  <section id="description">
-    <h2>Description</h2>
+  <section id="Introduction">
+    <h2>Introduction</h2>
     <p>
       DID Resolution is the first step in dereferencing a DID URL.
     </p>
@@ -176,19 +176,11 @@
         to
         the DID
         Enabled Application (<a>P1</a>) triggers a call to
-        ResolveDIDUrl
-        (<a>F1</a>)
-        on its internal Resolving Client (<a>P2</a>), which then
-        manages
-        the
-        process of resolution. How the client device gets a DID URL
-        and
-        interacts with the Resolving Client is outside the scope of
-        this
-        specification, in fact, it is entirely possible that DID
-        enabled
-        application (<a>P1</a>) directly acts as a resolving client
-        (<a>P2</a>).
+        Resolve (<a>F1</a>), which then resolves the DID URL according to its DID method, returning the authoritative DID Document (<a>D3</a>) according to the parameters passed in.
+      </p>
+      <p>
+        How the client device gets a DID URL and how the user interacts with application is outside the scope of this
+        specification.
       </p>
       <p>
         Each device in the diagram represents a different trust
@@ -208,11 +200,11 @@
         of a service provider (<a>E4</a>, <a>E7</a>, <a>E10</a>,
         respectively) who, as
         a legal person, holds operational authority over each device.
-        It
-        is
-        understood that each device is operated by a service provider,
-        administered by a human, using code maintained by a human. In
-        the case
+      </p>
+      <p>
+        It is understood that each device is operated by a service
+        provider, administered by a human, using code maintained by 
+        a human. In the case
         that either the maintenance or administration is AI-driven, we
         consider the human configuring and running that AI to be the
         maintainer or administrator, respectively. When discussing
@@ -243,46 +235,23 @@
       </p>
       <p>
         DID Resolution, as defined in this specification, begins after
-        the
-        Resolution Client Process (<a>P2</a>) receives a DID URL. It
-        first parses
-        resolution-specific DID parameters, turning them into
-        resolution
-        options, which are then passed, along with the original DID
-        URL
-        when
-        it calls Resolve (<a>F1</a>) on a running Resolver Process
-        (<a>P2</a>),
-        crossing the Resolution Trust Boundary (<a>T1</a>) to request
-        resolution.
-      </p>
-      <p>
-        The resolver (<a>P2</a>) queries the VDR (<a>P3</a>) with Read
-        VDR State
-        (<a>F3</a>), passing the Base DID URL (<a>D11</a>) –the DID
-        URL minus
-        the
-        fragment–and based on that state, generates the canonical DID
+        the Resolver (<a>P2</a>) receives a Base DID URL (<a>D2</a>)&mdash;the DID URL minus the
+        fragment&mdsh; and associated parameters. The resolver (<a>P2</a>) then queries the VDR Node(<a>P3</a>) with Read VDR State
+        (<a>F3</a>) based on that state, generates the canonical DID
         Document
         (<a>D3</a>) and associated metadata (<a>D10</a> and
         <a>D11</a>)
         which is
-        returned to the Resolution Client Process (<a>P2</a>). This
-        result is
-        passed back to DID URL Dereferencer Process (<a>P1</a>),
-        concluding the
-        resolution process for that DID URL (<a>E1</a>). The
-        dereferencing
-        process takes that result and depending on whether or not a
-        secondary
-        resource is indicated, it either returns the DID document or
-        dereferences the secondary resource.
+        returned to the application (<a>P1</a>).  The
+        application takes that result and depending on whether or not a
+        secondary resource is indicated, it either returns the DID document or dereferences the secondary resource.
       </p>
       <p>
-        How the VDR maintains state (<a>D7</a>) and how the resolver
+        How the VDR maintains state (<a>D9</a>) and how the resolver
         reads that
         state (<a>F3</a>) are DID-method specific, defined in each DID
         method
+        specification and otherwise out of scope of this
         specification.
       </p>
     </section>
@@ -382,10 +351,10 @@
             <td><dfn
                 data-lt="P1|P1 DID Enabled Application|DID Enabled Application">P1
                 DID Enabled Application</dfn></td>
-            <td>The process peforming dereferencing. It coordinates
-              with the resolving client (<a>P2</a>) and performs
+            <td>The process performing DID URL dereferencing. It coordinates
+              with the resolver (<a>P2</a>) and performs
               whatever is needed after resolution to dereference the
-              DID URL.</td>
+              DID URL and apply the result to the current context.</td>
           </tr>
           <tr>
             <td><dfn data-lt="P2|P2 Resolver|Resolver">P2
@@ -430,8 +399,8 @@
             <td><dfn data-lt="D1|D1 DID URL|DID URL">D1 DID URL</dfn>
             </td>
             <td>The initial DID URL, including any path, query, and
-              fragment parts. This is a pointer to a resource that can
-              be dereferenced (<a>P1</a>).</td>
+              fragment parts. This is a pointer to a resource that may
+              be dereferencable (<a>P1</a>).</td>
           </tr>
           <tr>
             <td><dfn data-lt="D2|D2 BASE DID URL|BASE DID URL">D2 BASE
@@ -447,14 +416,14 @@
                 Document</dfn></td>
             <td>The canonical DID document for the DID URL
               (<a>D1</a>), taking into account any parameters that
-              might affect resolution, such as <em>versionId</em></td>
+              might affect resolution, such as <a>versionId</a></td>
           </tr>
           <tr>
             <td><dfn data-lt="D4|D4 Client Code|Client Code">D4 Client
                 Code</dfn></td>
-            <td>Software running on the client device (<a>C1</a>) that
+            <td>Software running on the client device (<a>C1</a>) to realize the DID Enabled Application (<a>P1</a>). It
               manages the user experience as well as the dereferencing
-              (<a>P1</a>) and resolution (<a>P2</a>) processes. This
+              (<a>P1</a>) algorithm. This
               code includes all of the client-side software running in
               that container. This means the business logic, the UX
               interface, and any plugins that might be part of a
@@ -476,48 +445,47 @@
               (<a>P2</a>).</td>
           </tr>
           <tr>
-            <td><dfn data-lt="D6|D6 VDR Code|VDR Code">D6 VDR
-                Code</dfn></td>
-            <td>Software running on the VDR device (<a>C2</a>) that
-              maintains the state of the VDR and makes that state
-              available to the resolver via the Read VDR State
-              function (<a>F3</a>)</td>
+            <td><dfn data-lt="D6|D6 Resolver Code|Resolver Code">D8
+                Resolver Code</dfn></td>
+            <td>Software running on the resolver device (<a>C3</a>) to
+              realize the resolver process (<a>P2</a>) and manage the
+              Resolver data store (<a>D7</a>). It handles incoming Resolve
+              (<a>F1</a>) calls, taking
+              an incoming Base DID URL (<a>D2</a>) and returning its
+              authoritative DID document (<a>D3</a>).</td>
           </tr>
           <tr>
-            <td><dfn data-lt="D7|D7 VDR Data Store|VDR Data Store">D7
+            <td><dfn data-lt="D7|D7 Resolver Local Data|Resolver Local Data">D7
+                Resolver Local Data</dfn></td>
+            <td>Data stored on the resolver device (<a>C2</a>),
+              presumed accessible to the Resolver Process (<a>P2</a>)
+            </td>
+          <tr>
+            <td><dfn data-lt="D8|D8 VDR Code|VDR Code">D8 VDR
+                Code</dfn></td>
+            <td>Software running on the VDR device (<a>C2</a>) to instantiate the VDR Node as a running process (<a>P3</a>). 
+              It maintains the state of the VDR (<a>D9</a> and makes aspects of that state available to the resolver via the Read VDR State function (<a>F3</a>)</td>
+          </tr>
+          <tr>
+            <td><dfn data-lt="D9|D9 VDR Data Store|VDR Data Store">D9
                 VDR Data Store</dfn></td>
             <td>Data stored in the VDR device (<a>C2</a>), presumed
               accessible to the VDR Process (<a>P3</a>).</td>
           </tr>
-          <tr>
-            <td><dfn data-lt="D8|D8 Resolver Code|Resolver Code">D8
-                Resolver Code</dfn></td>
-            <td>Software running on the resolver device (<a>C3</a>),
-              which handles incoming Resolve (<a>F1</a>) calls, taking
-              an incoming DID URL (<a>D1</a>) and returning its
-              canonical DID document (<a>D3</a>).</td>
-          </tr>
-          <tr>
-            <td><dfn
-                data-lt="D9|D9 Resolver Local Data|Resolver Local Data">D9
-                Resolver Local Data</dfn></td>
-            <td>Data stored on the resolver device (<a>C3</a>),
-              presumed accessible to the Resolver Process (<a>P2</a>)
-            </td>
           </tr>
           <tr>
             <td><dfn
                 data-lt="D10|D10 DID Document Metadata|DID Document Metadata">D10
                 DID Document Metadata</dfn></td>
             <td>Metadata related to the DID Document (<a>D3</a>).
-              Returned by resolver (<a>P2</a>).</td>
+              Returned by resolver (<a>P2</a>) in response to Resolve(<a>F1</a>)</a>.</td>
           </tr>
           <tr>
             <td><dfn
                 data-lt="D11|D11 DID Resolution Metadata|DID Resolution Metadata">D11
                 DID Resolution Metadata</dfn></td>
             <td>Metadata related to the DID Resolution. Returned by
-              resolver (<a>P2</a>).</td>
+              resolver (<a>P2</a>) in response to Resolve (<a>F1</a>).</td>
           </tr>
           <tr>
             <td><dfn
@@ -562,7 +530,7 @@
       </table>
     </section>
   </section>
-  <section id="stakholders">
+  <section id="stakeholders">
     <h2>Stakeholders</h2>
     <section>
       <h3>E1 DID URL User</h3>
