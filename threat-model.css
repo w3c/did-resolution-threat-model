@@ -47,27 +47,27 @@ table.dfd-dictionary td.dfd-name {
 table.dfd-dictionary td.dfd-type {
   width: 6em;
 }
-table.dfd-dictionary td.dfd-description {
-}
 
-ol.threat-index {
-  list-style: none;
+#threat-toc {
   counter-reset: threat;
 }
 
-ol.threat-index li::before {
-  counter-increment: threat;
-  content: "T" counter(threat) ". ";
+ol.threat-toc {
+  list-style: none;
+}
+
+ol.threat-toc li::before {
+  content: "T" attr(value) ". ";
   font-weight: bold;
 }
 
-ol.threat-index li.section-title::before {
+ol.threat-toc li.section-title::before {
   font-weight: bold;
   counter-increment: none;
   content: "";
 }
 
-ol.threat-index li.section-title {
+ol.threat-toc li.section-title {
   font-weight: bold;
   font-style: italic;
 }
@@ -80,7 +80,7 @@ table.threat td.threat-name span.index-link {
   margin-top: -0.7em;
   top: 50%;
 }
-ol.threat-index h5 {
+ol.threat-toc h5 {
   margin:0;
 }
 
@@ -105,28 +105,20 @@ table.threat h5 {
 table.threat td {
   padding: 1em;
   position:relative;
+  border-bottom: thin solid black;
 }
 
 table.threat td.threat-name {
   font-weight:bold;
-  border-bottom: thin solid black;
   background-color: #c9daf7;
 }
 
-table.threat td.threat-desc {
-  border-bottom: thin solid black;
-}
 table.threat td.response-name {
   font-weight:bold;
-  border-bottom: thin solid black;
   background-color: #d9ead4;
 }
 
-table.threat td.response-desc {
-  border-bottom: thin solid black;
-}
 table.threat td.affected-component {
-  border-bottom: thin solid black;
   background-color: #fff2ce;
 }
 table.threat span.component-entry {
@@ -134,4 +126,15 @@ table.threat span.component-entry {
 }
 table.threat td.analysis-framework {
   background-color: #fce5ce;
+}
+
+p.threatCategory {
+  font-size: larger;
+  font-weight: bolder;
+  margin:0;
+}
+
+section.threatDetail {
+  visibility: hidden;
+  height:1px;
 }
