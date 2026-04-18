@@ -20,10 +20,8 @@
     }],
     elements: ["C1", "C3", "P3"],
     tags: ["privacy", "important"],
-    taxonomy: {
-      name: "STRIDE",
-      type: "spoofing"
-    }
+    taxonomyName: "STRIDE",
+    taxonomyClass: "spoofing"
   };
 
   window.ThreatModel.register(threat);
