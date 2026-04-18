@@ -11,6 +11,19 @@
     renderThreats(threats);
   }
 
+  function renderTags(threat) {
+    console.log("renderTags", threat);
+    let tags = threat?.tags;
+    if (!tags || !tags.length)
+      return '';
+
+    let tagsHtml = tags.map(tag => `
+          <span class="threat-tag threat-tag-${tag}">${tag}</span>
+        `).join("");
+
+    return tagsHtml;
+  }
+
   function renderToc(threats) {
     console.log("renderToc", threats);
 
@@ -54,7 +67,8 @@
 
       let id = makeId(threat);
 
-      return `<li value="${threatValue}"><a href="#${id}">${threat.name}</a></li>`;
+      return `<li value="${threatValue}"><a href="#${id}">${threat.name}</a> ${renderTags(threat)}
+    </li>`;
     }
 
     return;
@@ -114,26 +128,47 @@
         <h5 id="${id}">${threat.id}. ${threat.name}</h5>
       </section>
         <table class="threat">
-          <tr>
-            <td class="threat-name">
-              <section>
-                <h5 id="${threat.id}.inner">${threat.id}. ${threat.name}</h5>
-                ${renderTocLink()}
-              </section>
-            </td>
-          </tr>
-          <tr>
-            <td class="threat-description">
-              ${threat.desc}
-            </td>
-          </tr>
+          ${renderName(threat)}
+          ${renderDescription(threat)}
           ${renderImage(threat)}
           ${renderResponses(threat)}
           ${renderComponents(threat)}
-          ${renderFramework(threat)}
+          ${renderTaxonomy(threat)}
         </table>`;
     
       // now define support functions
+
+      function renderName(threat) {
+        console.log("renderName", threat);
+        if (!threat.name || threat.name=="")
+          return "";
+
+        return `
+          <tr>
+            <td class="threat-name">
+              <section>
+                <h5 id="${threat.id}.inner">${threat.id}. ${threat.name}
+                  ${renderTags(threat)}
+                </h5>
+                ${renderTocLink()}
+              </section>
+            </td>
+          </tr>`;
+      }
+
+      function renderDescription(threat) {
+        if(!threat.desc || threat.desc=="")
+          return "";
+
+        return `
+        <tr>
+          <td class="threat-description">
+            ${threat.desc}
+          </td>
+        </tr>
+        `
+      }
+
       function renderComponents(threat) {
         if (!threat.elements || !threat.elements.length)
           return "";
@@ -168,15 +203,17 @@
           </tr>`;
       }
 
-      function renderFramework(threat) {
-        let framework = threat.framework;
-        console.log("renderFramework", framework);
-        if (!framework)
+      function renderTaxonomy(threat) {
+        let taxonomyName = threat?.taxonomyName;
+        let taxonomyClass = threat?.taxonomyClass;
+
+        console.log("renderTaxonomy", taxonomyName);
+        if (!taxonomyName)
           return '';
 
         return `
           <tr>
-            <td class="analysis-framework">Analytic Framework: ${framework.name} (${framework.type})</td>
+            <td class="taxonomy">Threat Taxonomy: ${taxonomyName} (${taxonomyClass})</td>
           </tr>`;
       }
       function renderResponses(threat) {

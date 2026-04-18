@@ -842,7 +842,7 @@
         <li>A description</li>
         <li>One or more responses</li>
         <li>List of affected elements</li>
-        <li>The analytic framework</li>
+        <li>The threat taxonomy and class</li>
       </ol>
       <p>We discuss each of these below.</p>
       <section>
@@ -888,12 +888,26 @@
         </p>
       </section>
       <section>
-        <h5>The analytic framework</h5>
-        <p>Identify the analytic framework used to identify the
+        <h5>The threat taxonomy</h5>
+        <p>Identify the threat taxonomy used to identify the
           threat.
-          For example, STRIDE, LINDUN, or OSSTMM. If none was used,
+          For example, STRIDE, LINDUN, or OSSTMM3 for taxonomy. If none was used,
           enter "NONE".</p>
+          <p></p>
       </section>
+      <section>
+        <h5>The threat class</h5>
+        <p>Identify the class of threat as defined within the threat taxonomy.
+          For example, "Spoofing".</p>
+          <p></p>
+      </section>
+
+          For example, STRIDE, LINDUN, or OSSTMM3 for taxonomy. If none was
+          used,
+          enter "NONE".</p>
+        <p></p>
+      </section>
+
     </section>
     <section>
       <h5>Adding to this repo</h5>
@@ -923,7 +937,7 @@
       description: "This is a template response. It is not a real response."
     }],
     elements: ["C1", "P1"],
-    framework: {
+    taxonomy: {
       name: "Fake Framework",
       type: "Fake Type"
     }
