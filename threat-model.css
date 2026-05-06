@@ -124,7 +124,7 @@ table.threat td.affected-component {
 table.threat span.component-entry {
   font-weight:bold;
 }
-table.threat td.analysis-framework {
+table.threat td.analysis-taxonomy {
   background-color: #fce5ce;
 }
 
@@ -137,4 +137,21 @@ p.threatCategory {
 section.threatDetail {
   visibility: hidden;
   height:1px;
+}
+
+span.threat-tag {
+        border-radius: 4px;
+        padding: 2px 5px;
+        color: white;
+        margin: 0px 2px;
+        font-weight: 100;
+        background-color: black;
+}
+
+span.threat-tag.threat-tag-security {
+        background-color: red;
+}
+
+span.threat-tag.threat-tag-privacy {
+  background-color: blue;
 }

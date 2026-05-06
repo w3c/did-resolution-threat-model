@@ -1,6 +1,10 @@
 (
   function () {
     var threatCategories = [{
+      name: "Considered Threats",
+      id: "Considered Threats",
+      threats: []
+    },{
       name: "Target Threats",
       id: "target-threats",
       threats: ["T1", "T2", "T5"]
