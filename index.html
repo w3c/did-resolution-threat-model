@@ -67,20 +67,17 @@
       bringing that
       resource into the current computational context.
     </p>
-    <p>In programming languages like <strong>c</strong> and
-      <strong>c++</strong>, dereferencing a pointer means accessing,
-      interpreting, or applying the value pointed to by that pointer
-      in the current computational context. On the web, dereferencing
-      a URL means retrieving a representation of
-      a resource and returning it for interactions in the local
-      context. For web pages, that means displaying the retrieved HTML
-      in the browser, with an appropriate view. For asynchronous
-      JavaScript aka AJAX requests, it means bringing the result from
-      a
-      HTTP request into the current JavaScript context for processing,
-      often to change the content of the page. Dereferencing a DID URL
-      means retrieving the appropriate resource referred to by the DID
-      URL and applying it in the current context.
+    <p>In programming languages like <strong>c/c++</strong>, dereferencing a
+    pointer means accessing, interpreting, or applying the value pointed to by
+    that pointer in the current computational context. On the web, dereferencing
+    a URL means retrieving a representation of a resource and returning it for
+    interactions in the local context. For web pages, that means displaying the
+    retrieved HTML in the browser, with the appropriate rendering view. For
+    asynchronous JavaScript (a.k.a. AJAX) requests, it means bringing the result from
+    a HTTP request into the current JavaScript context for processing, often to
+    change the content of the page. Dereferencing a DID URL means retrieving the
+    appropriate resource referred to by the DID URL and applying it in the
+    current context.
     </p>
     <p>
       Resolving is the first step in dereferencing, when you acquire
@@ -156,95 +153,68 @@
     <section>
       <h3>Diagram</h3>
       <img src="diagrams/DID Resolution DFD.svg"
-        alt="DID Resolution Architecture Diagram">
+        alt="DID Resolution Architecture Diagram, described next">
     </section>
     <section>
       <h3>Description</h3>
       <p>
-        The process starts with a DID User (<a>E1</a>) who has a DID
-        URL
-        (<a>D1</a>)
-        they would like to dereference.
+        This process starts with a DID User (<a>E1</a>) who has a DID URL
+        (<a>D1</a>) they would like to dereference.
       </p>
       <p>
-        Using a DID User Client Device (<a>C1</a>), the user directs
-        the
-        device
-        to use the DID URL through some gesture, clicking on a link,
-        entering
-        a DID manually, or scanning a QR code (<a>F0</a>). This input
-        to
-        the DID
-        Enabled Application (<a>P1</a>) triggers a call to
-        Resolve (<a>F1</a>), which then resolves the DID URL according to its DID method, returning the authoritative DID Document (<a>D3</a>) according to the parameters passed in.
+        Using a DID User Client Device (<a>C1</a>), the user directs the device
+        to use the DID URL through some gesture, such as: clicking on a link,
+        entering a DID manually, or scanning a QR code (<a>F0</a>). This input
+        to the DID Enabled Application (<a>P1</a>) triggers a call to Resolve
+        (<a>F1</a>), which then resolves the DID URL according to its DID
+        method, returning the authoritative DID Document (<a>D3</a>) according
+        to input options.
       </p>
       <p>
-        How the client device gets a DID URL and how the user interacts with application is outside the scope of this
-        specification.
+        The process by which a client device receives a DID URL and how the user
+        interacts with the application is outside the scope of this specification.
       </p>
       <p>
-        Each device in the diagram represents a different trust
-        container,
-        each representing a specific set of code running on a
-        particular
-        device. Each code object (<a>D4</a>, <a>D6</a>, and <a>D8</a>)
-        is maintained by
-        at least one human maintainer (<a>E2</a>, <a>E5</a>,
-        <a>E8</a>,
-        respectively).
-        Each device (<a>C1</a>, <a>C2</a>, <a>C3</a>) is administered
-        by
-        at least one
-        human administrator (<a>E3</a>, <a>E6</a>, <a>E9</a>,
-        respectively) on behalf
-        of a service provider (<a>E4</a>, <a>E7</a>, <a>E10</a>,
-        respectively) who, as
-        a legal person, holds operational authority over each device.
+        Each device in the diagram represents a different trust container, each
+        representing a specific set of code running on a particular device. Each
+        code object (<a>D4</a>, <a>D6</a>, and <a>D8</a>) is maintained by at
+        least one human maintainer (<a>E2</a>, <a>E5</a>,
+        <a>E8</a>, respectively). Each device (<a>C1</a>, <a>C2</a>, <a>C3</a>)
+        is administered by at least one human administrator (<a>E3</a>,
+        <a>E6</a>, <a>E9</a>, respectively) on behalf of a service provider
+        (<a>E4</a>, <a>E7</a>, <a>E10</a>, respectively) who, as a legal person,
+        holds operational authority over each device.
       </p>
       <p>
-        It is understood that each device is operated by a service
-        provider, administered by a human, using code maintained by 
-        a human. In the case
-        that either the maintenance or administration is AI-driven, we
-        consider the human configuring and running that AI to be the
-        maintainer or administrator, respectively. When discussing
-        different
-        deployment strategies, it is important to consider how these
-        entities
-        change and how those changes impact security of the system.
+        It is understood that each device is operated by a service provider that
+        is administered by a human and uses code maintained by a human. In the
+        case that either the maintenance or administration is AI-driven, we
+        consider the human configuring and running that AI to be the maintainer
+        or administrator, respectively. When discussing different deployment
+        strategies, it is important to consider how these entities change and
+        how such changes impact overall system security.
       </p>
       <p>
-        It is also worth noting that the resolve method call
-        (<a>F1</a>)
-        crosses
-        a fundamental trust boundary (<a>T1</a>), where the result of
-        the
-        resolver *is* necessarily taken as authoritative. Regardless
-        of
-        the
-        complexity of the resolver and VDR systems, the DID user
-        chooses
-        the
-        resolvers they trust; it is understood that the choice of
-        resolver is
-        an unavoidable build versus buy decision. However that
-        resolver
-        achieves the result is up to the quality of its own
-        implementation of
-        each supported DID method.
+        It is also worth noting that the resolve method call (<a>F1</a>) crosses
+        a fundamental trust boundary (<a>T1</a>), where the result of the
+        resolver <em>is</em> necessarily taken as authoritative. Regardless of
+        the complexity of the resolver and VDR systems, the DID user chooses the
+        resolvers they trust and  it is understood that the choice of resolver
+        is an unavoidable build vs buy decision. However that resolver achieves
+        the result is up to the quality of its own implementation of each
+        supported DID method.
       </p>
       <p>
-        DID Resolution, as defined in this specification, begins after
-        the Resolver (<a>P2</a>) receives a Base DID URL (<a>D2</a>)&mdash;the DID URL minus the
-        fragment&mdsh; and associated parameters. The resolver (<a>P2</a>) then queries the VDR Node(<a>P3</a>) with Read VDR State
-        (<a>F3</a>) based on that state, generates the canonical DID
-        Document
-        (<a>D3</a>) and associated metadata (<a>D10</a> and
-        <a>D11</a>)
-        which is
-        returned to the application (<a>P1</a>).  The
+        The DID Resolution process, as defined in its specification, begins
+        after the Resolver (<a>P2</a>) receives a DID (<a>D2</a>) extracted from
+        an initial DID URL and selected options. The resolver (<a>P2</a>)
+        then queries the VDR Node(<a>P3</a>) with Read VDR State (<a>F3</a>)
+        based on that state, generates the canonical DID Document (<a>D3</a>)
+        and associated metadata (<a>D10</a> and
+        <a>D11</a>) which is returned to the application (<a>P1</a>).  The
         application takes that result and depending on whether or not a
-        secondary resource is indicated, it either returns the DID document or dereferences the secondary resource.
+        secondary resource is indicated, it either returns the DID document or
+        dereferences the secondary resource.
       </p>
       <p>
         How the VDR maintains state (<a>D9</a>) and how the resolver
@@ -535,20 +505,16 @@
     <section>
       <h3>E1 DID URL User</h3>
       <p>
-        The primary end user for DID resolution is an individual human
-        seeking
-        to use a DID URL for some purpose. There are two major
-        variations of
-        this [=DID URL User=]:
+        The primary end user for DID resolution is an individual human seeking
+        to use a DID URL for some purpose. There are two major categories of
+        [=DID URL User=]:
       </p>
       <ol>
-        <li>Someone who controls a [=DID document=], and presumably is
-          able to
-          update the DID document should its DID method support it.
+        <li>Someone who controls a [=DID document=], and presumably is able to
+        update the DID document in case its DID method support it.
         </li>
-        <li>Someone who has received or seen a DID URL in a particular
-          context
-          and wants to perform a DID related function with it,
+        <li>Someone who has received or seen a DID URL in a particular context
+        and wants to perform a DID related function with it, such as:
           <ol>
             <li>Verifying a proof signed by the DID</li>
             <li>Verifying an authorization invocation</li>
@@ -560,21 +526,14 @@
         </li>
       </ol>
       <p>
-        The [=DID URL User=] is primarily concerned with the integrity
-        and
-        reliability of the system. They may be just about anyone on
-        the planet
-        with a computation device at their disposal: a smart phone, a
-        desktop,
-        even a shared device at a library or internet cafe. The User
-        could
-        also be a corporate employee or agent, who has received a DID
-        from a
-        supplier or customer and wants to use it to verify a
-        verifiable
-        presentation or satisfy a confidence method to increase their
-        confidence that a given actor is the subject of a particular
-        Verifiable Credential.
+        The [=DID URL User=] is primarily concerned with the integrity and
+        reliability of the system. They may be just about anyone on the planet
+        with a computation device at their disposal: a smart phone, a desktop,
+        even a shared device at a library or internet cafe. The User could also
+        be a corporate employee or agent, who has received a DID from a supplier
+        or customer and wants to use it to verify a verifiable presentation or
+        satisfy a confidence method to increase their confidence that a given
+        actor is the subject of a particular Verifiable Credential.
       </p>
       <p>
         As a technical layperson, the DID URL User requires a certain
